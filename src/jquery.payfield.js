@@ -42,6 +42,7 @@
 
 					el.bind('keyup', function(){
 						var creditCardVendor = self.getcreditCardVendor(el.val());
+						self.switchCreditCardIcon(creditCardVendor);
 					});
 				},
 
@@ -50,7 +51,7 @@
 				 */
 				wrapInputElement: function(el) {
 					var elContainer = '<div class="'+this._name+'-container"></div>',
-						elIconContainer = '<div class="'+this._name+'-icon"></div>';
+						elIconContainer = '<div class="'+this._name+'-icon type-credit"></div>';
 
 					el.addClass(this._name+'-input') // Add a class to the input with the plugin name
 					  .wrap(elContainer) // Wrap the input with a container div
@@ -76,16 +77,31 @@
 				},
 
 				/**
+				 * Replace the current icon with a new one if there is a vendor match
+				 * @param  {string} vendor The vendor returned by getcreditCardVendor
+				 */
+				switchCreditCardIcon: function(vendor) {
+					this.$icon.removeClass().addClass(this._name+'-icon');
+					if (vendor) {
+						this.$icon.addClass('type-'+vendor);
+					}
+				},
+
+				/**
 				 * Adjust the styles of the icon to fix perfectly inside of the input
 				 * depending on its current attributes
 				 */
 				setIconDimensions: function(el) {
-					var $icon = el.siblings('.'+this._name+'-icon'),
-						inputPadding = parseInt(el.css('padding-top')),
-						iconBorderWidth = (el.outerWidth() - el.innerWidth()) / 2;
-						
-					$icon.css({
-						'height': el.height() + 'px',
+					this.$icon = el.siblings('.'+this._name+'-icon');
+					var inputPadding = parseInt(el.css('padding-top')),
+						iconBorderWidth = (el.outerWidth() - el.innerWidth()) / 2,
+						iconWidth = el.height() * 1.6590909091,
+						iconHeight = el.height();
+					
+					el.css('padding-left', iconWidth + inputPadding * 2 + 'px');
+					this.$icon.css({
+						'width': iconWidth + 'px',
+						'height': iconHeight + 'px',
 						'top': inputPadding + iconBorderWidth + 'px'
 					});
 				}

@@ -7,6 +7,7 @@
 
 $icon-size: 32px;
 $field-padding: 8px;
+$vendor-list: amex credit dankort diners discover forbru google jcb laser maestro mastercard money paypal shopify solo visa;
 
 .payfield-container { position: relative; }
 .payfield-input {
@@ -22,5 +23,10 @@ $field-padding: 8px;
     position: absolute;
     top: $field-padding;
     left: $field-padding;
-    background: red;
+    background-image: url(icons/credit.png);
+    background-size: cover;
+}
+
+@each $current-vendor in $vendor-list {
+    .type-#{$current-vendor} { background-image: url(icons/#{$current-vendor}.png); }
 }

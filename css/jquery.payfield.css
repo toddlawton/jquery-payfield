@@ -1,0 +1,74 @@
+/**
+ * Project: Payfield
+ * Description: Single Input Credit Card Processing
+ * Author: @toddlawton
+ * Date: 05/07/2015
+ */
+.payfield-container {
+  position: relative; }
+
+.payfield-input {
+  padding-top: 8px;
+  padding-right: 8px;
+  padding-bottom: 8px;
+  padding-left: 48px;
+  box-sizing: border-box; }
+
+.payfield-icon {
+  width: 32px;
+  height: 16px;
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  background-image: url(icons/credit.png);
+  background-size: cover; }
+
+.type-amex {
+  background-image: url(icons/amex.png); }
+
+.type-credit {
+  background-image: url(icons/credit.png); }
+
+.type-dankort {
+  background-image: url(icons/dankort.png); }
+
+.type-diners {
+  background-image: url(icons/diners.png); }
+
+.type-discover {
+  background-image: url(icons/discover.png); }
+
+.type-forbru {
+  background-image: url(icons/forbru.png); }
+
+.type-google {
+  background-image: url(icons/google.png); }
+
+.type-jcb {
+  background-image: url(icons/jcb.png); }
+
+.type-laser {
+  background-image: url(icons/laser.png); }
+
+.type-maestro {
+  background-image: url(icons/maestro.png); }
+
+.type-mastercard {
+  background-image: url(icons/mastercard.png); }
+
+.type-money {
+  background-image: url(icons/money.png); }
+
+.type-paypal {
+  background-image: url(icons/paypal.png); }
+
+.type-shopify {
+  background-image: url(icons/shopify.png); }
+
+.type-solo {
+  background-image: url(icons/solo.png); }
+
+.type-visa {
+  background-image: url(icons/visa.png); }
+
+/*# sourceMappingURL=jquery.payfield.css.map */
