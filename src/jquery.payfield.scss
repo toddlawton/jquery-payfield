@@ -1,0 +1,26 @@
+/**
+ * Project: Payfield
+ * Description: Single Input Credit Card Processing
+ * Author: @toddlawton
+ * Date: 05/07/2015
+ */
+
+$icon-size: 32px;
+$field-padding: 8px;
+
+.payfield-container { position: relative; }
+.payfield-input {
+    padding-top: $field-padding;
+    padding-right: $field-padding;
+    padding-bottom: $field-padding;
+    padding-left: $field-padding * 2 + $icon-size;
+    box-sizing: border-box;
+}
+.payfield-icon { 
+    width: $icon-size;
+    height: $icon-size / 2;
+    position: absolute;
+    top: $field-padding;
+    left: $field-padding;
+    background: red;
+}
