@@ -32,6 +32,7 @@
 				init: function () {
 					var $el = this.$element;
 					
+					this.addInputAttributes($el);
 					this.wrapInputElement($el)
 					this.bindEvents($el);
 					this.setIconDimensions($el);
@@ -40,10 +41,22 @@
 				bindEvents: function(el) {
 					var self = this;
 
+					el.bind('keydown', function(e){
+						self.checkForSpaces(e);
+					});
+
 					el.bind('keyup', function(){
 						var creditCardVendor = self.getcreditCardVendor(el.val());
 						self.switchCreditCardIcon(creditCardVendor);
 					});
+				},
+
+				/**
+				 * Apply element attributes to the input
+				 */
+				addInputAttributes: function(el) {
+					this.settings.maxlength = 19;
+					el.attr('maxlength', this.settings.maxlength);
 				},
 
 				/**
@@ -88,6 +101,27 @@
 				},
 
 				/**
+				 * Add/remove spaces between sets of 4 digits
+				 * @param  {event} e The keyup or keydown event object
+				 */
+				checkForSpaces: function(e) {
+					var newValue = this.$element.val();
+
+					if (e.which == 8 || e.which == 46) {
+						if ((newValue.length-1) % 5 === 0 && (newValue.length-1) > 0) {
+							var valSplit = this.$element.val().split('');
+							valSplit[newValue.length-2] = '';
+							valSplit = valSplit.join('');
+							this.$element.val(valSplit);
+						}
+					} else {
+						if ((newValue.length+1) % 5 === 0 && (newValue.length+1) < this.settings.maxlength) {
+							this.$element.val(this.$element.val()+' ');
+						}
+					}
+				},
+
+				/**
 				 * Adjust the styles of the icon to fix perfectly inside of the input
 				 * depending on its current attributes
 				 */
@@ -99,6 +133,7 @@
 						iconHeight = el.height();
 					
 					el.css('padding-left', iconWidth + inputPadding * 2 + 'px');
+					
 					this.$icon.css({
 						'width': iconWidth + 'px',
 						'height': iconHeight + 'px',

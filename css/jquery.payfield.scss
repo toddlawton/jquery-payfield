@@ -11,6 +11,7 @@ $vendor-list: amex credit dankort diners discover forbru google jcb laser maestr
 
 .payfield-container { position: relative; }
 .payfield-input {
+    display: block;
     padding-top: $field-padding;
     padding-right: $field-padding;
     padding-bottom: $field-padding;
