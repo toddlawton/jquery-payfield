@@ -5,7 +5,8 @@
  * Date: 05/07/2015
  */
 .payfield-container {
-  position: relative; }
+  position: relative;
+  overflow: hidden; }
 
 .payfield-input {
   display: block;
@@ -13,7 +14,8 @@
   padding-right: 8px;
   padding-bottom: 8px;
   padding-left: 48px;
-  box-sizing: border-box; }
+  box-sizing: border-box;
+  transition: 0.3s linear text-indent; }
 
 .payfield-icon {
   width: 32px;
@@ -23,6 +25,27 @@
   left: 8px;
   background-image: url(icons/credit.png);
   background-size: cover; }
+
+.additional-credit-card-fields {
+  position: absolute;
+  top: 10px;
+  left: 100%;
+  padding: 0;
+  margin: 0;
+  transition: 0.3s linear left; }
+  .additional-credit-card-fields input {
+    outline: none;
+    outline: -webkit-focus-ring-color auto 0px;
+    -apple-appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    -khtml-appearance: none;
+    appearance: none;
+    display: block;
+    float: left;
+    padding: 0;
+    margin: 0;
+    border: none; }
 
 .type-amex {
   background-image: url(icons/amex.png); }

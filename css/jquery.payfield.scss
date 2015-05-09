@@ -7,9 +7,16 @@
 
 $icon-size: 32px;
 $field-padding: 8px;
+$border-width: 1px;
+$animation-speed: 0.3s;
+$animation-easing: linear;
 $vendor-list: amex credit dankort diners discover forbru google jcb laser maestro mastercard money paypal shopify solo visa;
 
-.payfield-container { position: relative; }
+.payfield-container { 
+    position: relative;
+    overflow: hidden;
+}
+
 .payfield-input {
     display: block;
     padding-top: $field-padding;
@@ -17,6 +24,7 @@ $vendor-list: amex credit dankort diners discover forbru google jcb laser maestr
     padding-bottom: $field-padding;
     padding-left: $field-padding * 2 + $icon-size;
     box-sizing: border-box;
+    transition: $animation-speed $animation-easing text-indent;
 }
 .payfield-icon { 
     width: $icon-size;
@@ -26,6 +34,29 @@ $vendor-list: amex credit dankort diners discover forbru google jcb laser maestr
     left: $field-padding;
     background-image: url(icons/credit.png);
     background-size: cover;
+}
+
+.additional-credit-card-fields {
+    position: absolute;
+    top: $field-padding + $border-width * 2;
+    left: 100%;
+    padding: 0;
+    margin: 0;
+    transition: $animation-speed $animation-easing left;
+    input {
+        outline: none;
+        outline: -webkit-focus-ring-color auto 0px;
+        -apple-appearance: none;
+        -webkit-appearance: none;
+        -moz-appearance: none;
+        -khtml-appearance: none;
+        appearance: none;
+        display: block;
+        float: left;
+        padding: 0;
+        margin: 0;
+        border: none;
+    }
 }
 
 @each $current-vendor in $vendor-list {
