@@ -64,11 +64,32 @@
 				 */
 				wrapInputElement: function(el) {
 					var elContainer = '<div class="'+this._name+'-container"></div>',
-						elIconContainer = '<div class="'+this._name+'-icon type-credit"></div>';
+						elIconContainer = '<div class="'+this._name+'-icon type-credit"></div>',
+						inputList = [{
+							name: 'credit-card-expiration',
+							placeholder: 'MM/YY',
+							maxlength: 5,
+							type: 'tel'
+						},
+						{
+							name: 'credit-card-cvv',
+							placeholder: 'CVV',
+							maxlength: 3,
+							type: 'tel'
+						}],
+						inputMarkup = '';
+
+					$.each(inputList, function(index, attrs) {
+						inputMarkup += '<input class="'+attrs.name+'" placeholder="'+attrs.placeholder+'" maxlength="'+attrs.maxlength+'" type="'+attrs.type+'" />';
+					});
+
+					inputMarkup = '<div class="additional-credit-card-fields">' + inputMarkup;
+					inputMarkup = inputMarkup + '</div>';
 
 					el.addClass(this._name+'-input') // Add a class to the input with the plugin name
 					  .wrap(elContainer) // Wrap the input with a container div
-					  .parents('.'+this._name+'-container').prepend(elIconContainer); // Add a flag icon before the input inside of the container
+					  .parents('.'+this._name+'-container').prepend(elIconContainer) // Add a flag icon before the input inside of the container
+					  									   .append(inputMarkup); // Add additional credit card fields
 				},
 
 				/**
