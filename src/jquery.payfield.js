@@ -31,6 +31,8 @@
 
 				init: function () {
 					var $el = this.$element;
+
+					this.settings.letterWidth = (parseInt($el.css('font-size')) / 1.5);
 					
 					this.addInputAttributes($el);
 					this.wrapInputElement($el)
@@ -60,12 +62,16 @@
 						}
 					});
 
+					el.closest('.'+this._name+'-container').find('.credit-card-expiration').on('keyup', function(e) {
+						self.checkForSlashes(e);
+					});
+
 					el.closest('.'+this._name+'-container').find('input').each(function(){
 						var pattern = new RegExp($(this).attr('pattern'));
 
 						$(this).on('keydown', function(e) {
-							// If not delete and backspace and not an integer, prevent keypress
-							if (e.which !== 8 && e.which !== 46 && !pattern.test(String.fromCharCode(e.which))) {
+							// If not tab, delete and backspace key and not an integer, prevent keypress
+							if (e.which !== 9 && e.which !== 8 && e.which !== 46 && !pattern.test(String.fromCharCode(e.which))) {
 								e.preventDefault();
 								return false;
 							}
@@ -85,7 +91,8 @@
 				 * Wrap the input with a containing div
 				 */
 				wrapInputElement: function(el) {
-					var elContainer = '<div class="'+this._name+'-container"></div>',
+					var self = this,
+						elContainer = '<div class="'+this._name+'-container"></div>',
 						elIconContainer = '<div class="'+this._name+'-icon type-credit"></div>',
 						inputList = [{
 							name: 'credit-card-expiration',
@@ -104,27 +111,39 @@
 						inputMarkup = '';
 
 					$.each(inputList, function(index, attrs) {
-						inputMarkup += '<input class="'+attrs.name+'" placeholder="'+attrs.placeholder+'" maxlength="'+attrs.maxlength+'" pattern="'+attrs.pattern+'" type="'+attrs.type+'" />';
+						inputMarkup += '<input class="'+attrs.name+'" placeholder="'+attrs.placeholder+'" maxlength="'+attrs.maxlength+'" pattern="'+attrs.pattern+'" type="'+attrs.type+'" style="width:'+((attrs.maxlength+1)*self.settings.letterWidth)+'px" />';
 					});
 
 					inputMarkup = '<div class="additional-credit-card-fields">' + inputMarkup;
 					inputMarkup = inputMarkup + '</div>';
 
 					el.addClass(this._name+'-input') // Add a class to the input with the plugin name
+					  .css('min-width', this.$element.outerWidth() + 'px')
 					  .attr('pattern', '^[0-9]*$') // Allow only integers in the card input
 					  .wrap(elContainer) // Wrap the input with a container div
-					  .parents('.'+this._name+'-container').prepend(elIconContainer) // Add a flag icon before the input inside of the container
-					  									   .append(inputMarkup); // Add additional credit card fields
+					  .closest('.'+this._name+'-container').prepend(elIconContainer) // Add a flag icon before the input inside of the container
+					  									   .append(inputMarkup) // Add additional credit card fields
+					  									   .css('min-width', this.$element.outerWidth() + 'px');
 
+
+					// Cache selectors for the newly added elements
 				    this.$icon = el.siblings('.'+this._name+'-icon');
 				    this.$additionalFields = el.siblings('.additional-credit-card-fields');
 				    this.$expirationField = this.$additionalFields.find('.credit-card-expiration');
-				    this.hideAdditionalFields();
+
+				    // Apply a fixed with for the containing div of the additional fields
+				    var totalInputWidth = 0;
+				    this.$additionalFields.find('input').each(function(){
+				    	totalInputWidth += $(this).width();
+				    });
+				    this.$additionalFields.css('min-width', totalInputWidth+self.settings.letterWidth*2+'px');
+				    this.hideAdditionalFields(); // Hide by default until card number is completed
+					
+					// Store attributes of the new elements for later use
 					this.settings.inputPadding = parseInt(el.css('padding-top'));
 					this.settings.iconBorderWidth = (el.outerWidth() - el.innerWidth()) / 2;
 					this.settings.iconWidth = el.height() * 1.6590909091;
 					this.settings.iconHeight = el.height();
-					this.settings.letterWidth = (parseInt(el.css('font-size')) / 1.5);
 				},
 
 				/**
@@ -163,7 +182,8 @@
 				checkForSpaces: function(e) {
 					var newValue = this.$element.val();
 
-					if (e.which == 8 || e.which == 46) {
+					if (e.which == 8 || e.which == 46) { 
+						// When backspace or delete keypressed, check for / remove existing spaces
 						if ((newValue.length-1) % 5 === 0 && (newValue.length-1) > 0) {
 							var valSplit = this.$element.val().split('');
 							valSplit[newValue.length-2] = '';
@@ -173,6 +193,23 @@
 					} else {
 						if ((newValue.length+1) % 5 === 0 && (newValue.length+1) < this.settings.maxlength) {
 							this.$element.val(this.$element.val()+' ');
+						}
+					}
+				},
+
+				/**
+				 * Add/remove slashes in expiration field
+				 * @param  {event} e The keyup or keydown event object
+				 */
+				checkForSlashes: function(e) {
+					var $input = $(e.currentTarget),
+						newValue = $input.val();
+
+					if (e.which == 8 || e.which == 46) { 
+
+					} else {
+						if ((newValue.length+1) % 3 === 0 && (newValue.length+1) < $input.attr('maxlength')) {
+							$input.val($input.val()+'/');
 						}
 					}
 				},
@@ -191,18 +228,24 @@
 					});
 				},
 
+				/**
+				 * Hide all but the last 4 digits of the card number and move additional fields into view.
+				 * @param  {boolean} triggerFocus Set to true if next input focus desired
+				 */
 				showAdditionalFields: function(triggerFocus) {
 					this.$element.css('text-indent', - this.settings.letterWidth * 12 - this.settings.letterWidth / 2 - 1 + 'px');
-					this.$additionalFields.css('left', this.settings.iconWidth + this.settings.inputPadding * 2 + (this.settings.letterWidth + 1) * 5 + 'px');
+					this.$additionalFields.css('left', this.settings.iconWidth + this.settings.inputPadding * 2 + (this.settings.letterWidth + 1) * 5 + 'px').addClass('visible');
 					if (triggerFocus) {
 						this.$expirationField.trigger('focus');
 					}
 				},
 
+				/**
+				 * Reveal full card number for editing, hide additional fields
+				 */
 				hideAdditionalFields: function() {
 					this.$element.css('text-indent', '0px');
-					this.$additionalFields.css('left', this.$element.outerWidth() + 'px');
-
+					this.$additionalFields.css('left', this.$element.outerWidth() + 'px').removeClass('visible');
 				}
 		});
 

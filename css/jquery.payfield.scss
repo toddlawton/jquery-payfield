@@ -13,12 +13,14 @@ $animation-easing: linear;
 $vendor-list: amex credit dankort diners discover forbru google jcb laser maestro mastercard money paypal shopify solo visa;
 
 .payfield-container { 
+    display: inline-block;
     position: relative;
     overflow: hidden;
 }
 
 .payfield-input {
     display: block;
+    margin: 0;
     padding-top: $field-padding;
     padding-right: $field-padding;
     padding-bottom: $field-padding;
@@ -39,10 +41,20 @@ $vendor-list: amex credit dankort diners discover forbru google jcb laser maestr
 .additional-credit-card-fields {
     position: absolute;
     top: $field-padding + $border-width * 2;
-    left: 100%;
+    left: 0;
     padding: 0;
     margin: 0;
-    transition: $animation-speed $animation-easing left;
+    opacity: 0;
+    visibility: hidden;
+    transition: $animation-speed $animation-easing left, 0.01s $animation-easing opacity, 0.01s $animation-easing visibility;
+    -webkit-transition: $animation-speed $animation-easing left, 0.01s $animation-easing opacity, 0.01s $animation-easing visibility;
+    -moz-transition: $animation-speed $animation-easing left, 0.01s $animation-easing opacity, 0.01s $animation-easing visibility;
+    -ms-transition: $animation-speed $animation-easing left, 0.01s $animation-easing opacity, 0.01s $animation-easing visibility;
+    
+    &.visible {
+        opacity: 1;
+        visibility: visible;
+    }
     input {
         outline: none;
         outline: -webkit-focus-ring-color auto 0px;
@@ -56,6 +68,7 @@ $vendor-list: amex credit dankort diners discover forbru google jcb laser maestr
         padding: 0;
         margin: 0;
         border: none;
+        background: none;
     }
 }
 

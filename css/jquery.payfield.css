@@ -5,11 +5,13 @@
  * Date: 05/07/2015
  */
 .payfield-container {
+  display: inline-block;
   position: relative;
   overflow: hidden; }
 
 .payfield-input {
   display: block;
+  margin: 0;
   padding-top: 8px;
   padding-right: 8px;
   padding-bottom: 8px;
@@ -29,10 +31,18 @@
 .additional-credit-card-fields {
   position: absolute;
   top: 10px;
-  left: 100%;
+  left: 0;
   padding: 0;
   margin: 0;
-  transition: 0.3s linear left; }
+  opacity: 0;
+  visibility: hidden;
+  transition: 0.3s linear left, 0.01s linear opacity, 0.01s linear visibility;
+  -webkit-transition: 0.3s linear left, 0.01s linear opacity, 0.01s linear visibility;
+  -moz-transition: 0.3s linear left, 0.01s linear opacity, 0.01s linear visibility;
+  -ms-transition: 0.3s linear left, 0.01s linear opacity, 0.01s linear visibility; }
+  .additional-credit-card-fields.visible {
+    opacity: 1;
+    visibility: visible; }
   .additional-credit-card-fields input {
     outline: none;
     outline: -webkit-focus-ring-color auto 0px;
@@ -45,7 +55,8 @@
     float: left;
     padding: 0;
     margin: 0;
-    border: none; }
+    border: none;
+    background: none; }
 
 .type-amex {
   background-image: url(icons/amex.png); }
