@@ -71,7 +71,7 @@
 
 						$(this).on('keydown', function(e) {
 							// If not tab, delete and backspace key and not an integer, prevent keypress
-							if (e.which !== 9 && e.which !== 8 && e.which !== 46 && !pattern.test(String.fromCharCode(e.which))) {
+							if (e.which !== 39 && e.which !== 37 && e.which !== 9 && e.which !== 8 && e.which !== 46 && !pattern.test(String.fromCharCode(e.which))) {
 								e.preventDefault();
 								return false;
 							}
@@ -206,7 +206,12 @@
 						newValue = $input.val();
 
 					if (e.which == 8 || e.which == 46) { 
-
+						if ((newValue.length-1) % 3 === 0 && (newValue.length-1) > 0) {
+							var valSplit = newValue.split('');
+							valSplit[newValue.length-2] = '';
+							valSplit = valSplit.join('');
+							$input.val(valSplit);
+						}
 					} else {
 						if ((newValue.length+1) % 3 === 0 && (newValue.length+1) < $input.attr('maxlength')) {
 							$input.val($input.val()+'/');
