@@ -238,7 +238,7 @@
 				 * @param  {boolean} triggerFocus Set to true if next input focus desired
 				 */
 				showAdditionalFields: function(triggerFocus) {
-					this.$element.css('text-indent', - this.settings.letterWidth * 12 - this.settings.letterWidth / 2 - 1 + 'px');
+					this.$element.css('text-indent', - this.settings.letterWidth * 12 + 'px');
 					this.$additionalFields.css('left', this.settings.iconWidth + this.settings.inputPadding * 2 + (this.settings.letterWidth + 1) * 5 + 'px').addClass('visible');
 					if (triggerFocus) {
 						this.$expirationField.trigger('focus');
