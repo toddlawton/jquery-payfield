@@ -49,23 +49,14 @@
 							self.hideAdditionalFields();
 						}
 					})
-					.on('keydown', function(e){
-						var keypressed = e.which;
-						self.checkForSpaces(e);
-					})
 					.on('keyup blur', function(){
 						var creditCardVendor = self.getcreditCardVendor(el.val());
 						self.switchCreditCardIcon(creditCardVendor);
-						if (self.$element.val().length === 19) {
+						if ($(this).inputmask("isComplete")) {
 							self.showAdditionalFields(true);
 							self.settings.cardNumberCompleted = true;
-						}
+					    }
 					});
-
-					el.closest('.'+this._name+'-container').find('.credit-card-expiration').on('keyup', function(e) {
-						self.checkForSlashes(e);
-					});
-
 					el.closest('.'+this._name+'-container').find('input').each(function(){
 						var pattern = new RegExp($(this).attr('pattern'));
 
@@ -119,6 +110,14 @@
 
 					el.addClass(this._name+'-input') // Add a class to the input with the plugin name
 					  .css('min-width', this.$element.outerWidth() + 'px')
+					  .inputmask("9999 9999 9999 9999", { 
+					      "oncomplete": function() { 
+							  self.showAdditionalFields(true);
+							  self.settings.cardNumberCompleted = true;
+						  },
+						  "placeholder": "",
+						  showMaskOnFocus: false
+				      })
 					  .attr('pattern', '^[0-9]*$') // Allow only integers in the card input
 					  .wrap(elContainer) // Wrap the input with a container div
 					  .closest('.'+this._name+'-container').prepend(elIconContainer) // Add a flag icon before the input inside of the container
@@ -130,6 +129,8 @@
 				    this.$icon = el.siblings('.'+this._name+'-icon');
 				    this.$additionalFields = el.siblings('.additional-credit-card-fields');
 				    this.$expirationField = this.$additionalFields.find('.credit-card-expiration');
+				    this.$cvvField = this.$additionalFields.find('.credit-card-cvv');
+					this.$expirationField.inputmask("99/99", { "oncomplete": function() { self.$cvvField.trigger('focus') }, "placeholder": "", showMaskOnFocus: false });
 
 				    // Apply a fixed with for the containing div of the additional fields
 				    var totalInputWidth = 0;
@@ -172,50 +173,6 @@
 					this.$icon.removeClass().addClass(this._name+'-icon');
 					if (vendor) {
 						this.$icon.addClass('type-'+vendor);
-					}
-				},
-
-				/**
-				 * Add/remove spaces between sets of 4 digits
-				 * @param  {event} e The keyup or keydown event object
-				 */
-				checkForSpaces: function(e) {
-					var newValue = this.$element.val();
-
-					if (e.which == 8 || e.which == 46) { 
-						// When backspace or delete keypressed, check for / remove existing spaces
-						if ((newValue.length-1) % 5 === 0 && (newValue.length-1) > 0) {
-							var valSplit = this.$element.val().split('');
-							valSplit[newValue.length-2] = '';
-							valSplit = valSplit.join('');
-							this.$element.val(valSplit);
-						}
-					} else {
-						if ((newValue.length+1) % 5 === 0 && (newValue.length+1) < this.settings.maxlength) {
-							this.$element.val(this.$element.val()+' ');
-						}
-					}
-				},
-
-				/**
-				 * Add/remove slashes in expiration field
-				 * @param  {event} e The keyup or keydown event object
-				 */
-				checkForSlashes: function(e) {
-					var $input = $(e.currentTarget),
-						newValue = $input.val();
-
-					if (e.which == 8 || e.which == 46) { 
-						if ((newValue.length-1) % 3 === 0 && (newValue.length-1) > 0) {
-							var valSplit = newValue.split('');
-							valSplit[newValue.length-2] = '';
-							valSplit = valSplit.join('');
-							$input.val(valSplit);
-						}
-					} else {
-						if ((newValue.length+1) % 3 === 0 && (newValue.length+1) < $input.attr('maxlength')) {
-							$input.val($input.val()+'/');
-						}
 					}
 				},
 

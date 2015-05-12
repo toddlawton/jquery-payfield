@@ -1,17 +1,21 @@
 {
-	"name": "jquery-payfield",
-	"version": "0.0.1",
-	"homepage": "https://github.com/toddlawton/jquery-payfield",
-	"authors": [
-		"Todd Lawton Beauchamp <toddbee@gmail.com>"
-	],
-	"description": "Simplified Credit Card Input",
-	"main": "src/jquery.payfield.js",
-	"keywords": [
-		"jquery",
-		"plugin",
-		"payment",
-		"jquery-plugin"
-	],
-	"license": "MIT"
+  "name": "jquery-payfield",
+  "version": "0.0.1",
+  "homepage": "https://github.com/toddlawton/jquery-payfield",
+  "authors": [
+    "Todd Lawton Beauchamp <toddbee@gmail.com>"
+  ],
+  "description": "Simplified Credit Card Input",
+  "main": "src/jquery.payfield.js",
+  "keywords": [
+    "jquery",
+    "plugin",
+    "payment",
+    "jquery-plugin"
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "jquery.inputmask": "RobinHerbots/jquery.inputmask#~3.1.63",
+    "modernizr": "~2.8.3"
+  }
 }
