@@ -13,9 +13,11 @@
 				creditCardTests: {
 					'visa': /^4/,
 					'mastercard': /^5[1-5]/,
-					'american-express': /^3(4|7)/,
+					'amex': /^3(4|7)/,
 					'discover': /^6011/
-				}
+				},
+				expirationMonthId: 'cardExpirationMonth',
+				expirationYearId: 'cardExpirationYear'
 			};
 
 		function Plugin ( element, options ) {
@@ -49,15 +51,22 @@
 							self.hideAdditionalFields();
 						}
 					})
-					.on('keyup blur', function(){
-						var creditCardVendor = self.getcreditCardVendor(el.val());
+					.on('keyup', function(){
+						var creditCardVendor = self.getcreditCardVendor(el.val()),
+							endingDigits = $(this).val();
+
 						self.switchCreditCardIcon(creditCardVendor);
+						$(this).attr('data-card-type', creditCardVendor);
+
+						endingDigits = endingDigits.substr(15, 18);
+						$(this).attr('data-ending-digits', endingDigits);
+						
 						if ($(this).inputmask("isComplete")) {
 							self.showAdditionalFields(true);
 							self.settings.cardNumberCompleted = true;
-					    }
-					});
-					el.closest('.'+this._name+'-container').find('input').each(function(){
+					    }	
+					})
+					.closest('.'+this._name+'-container').find('input').each(function(){
 						var pattern = new RegExp($(this).attr('pattern'));
 
 						$(this).on('keydown', function(e) {
@@ -86,14 +95,27 @@
 						elContainer = '<div class="'+this._name+'-container"></div>',
 						elIconContainer = '<div class="'+this._name+'-icon type-credit"></div>',
 						inputList = [{
-							name: 'credit-card-expiration',
-							placeholder: 'MM/YY',
-							maxlength: 5,
+							class: this._name+'-credit-card-expiration-month',
+							id: this._name+'CardExpirationMonth',
+							name: this._name+'CardExpirationMonth',
+							placeholder: 'MM',
+							maxlength: 2,
 							pattern: '^[0-9]*$',
 							type: 'tel'
 						},
 						{
-							name: 'credit-card-cvv',
+							class: this._name+'-credit-card-expiration-year',
+							id: this._name+'CardExpirationYear',
+							name: this._name+'CardExpirationYear',
+							placeholder: 'YY',
+							maxlength: 2,
+							pattern: '^[0-9]*$',
+							type: 'tel'
+						},
+						{
+							class: 'credit-card-cvv',
+							id: 'cvv',
+							name: 'cvv',
 							placeholder: 'CVV',
 							maxlength: 3,
 							pattern: '^[0-9]*$',
@@ -102,7 +124,7 @@
 						inputMarkup = '';
 
 					$.each(inputList, function(index, attrs) {
-						inputMarkup += '<input class="'+attrs.name+'" placeholder="'+attrs.placeholder+'" maxlength="'+attrs.maxlength+'" pattern="'+attrs.pattern+'" type="'+attrs.type+'" style="width:'+((attrs.maxlength+1)*self.settings.letterWidth)+'px" />';
+						inputMarkup += '<input id="'+attrs.id+'" class="'+attrs.class+'" name="'+attrs.name+'" placeholder="'+attrs.placeholder+'" maxlength="'+attrs.maxlength+'" pattern="'+attrs.pattern+'" type="'+attrs.type+'" style="width:'+((attrs.maxlength+1)*self.settings.letterWidth)+'px" />';
 					});
 
 					inputMarkup = '<div class="additional-credit-card-fields">' + inputMarkup;
@@ -111,10 +133,7 @@
 					el.addClass(this._name+'-input') // Add a class to the input with the plugin name
 					  .css('min-width', this.$element.outerWidth() + 'px')
 					  .inputmask("9999 9999 9999 9999", { 
-					      "oncomplete": function() { 
-							  self.showAdditionalFields(true);
-							  self.settings.cardNumberCompleted = true;
-						  },
+					      "oncomplete": function() {},
 						  "placeholder": "",
 						  showMaskOnFocus: false
 				      })
@@ -126,11 +145,74 @@
 
 
 					// Cache selectors for the newly added elements
+					
 				    this.$icon = el.siblings('.'+this._name+'-icon');
 				    this.$additionalFields = el.siblings('.additional-credit-card-fields');
-				    this.$expirationField = this.$additionalFields.find('.credit-card-expiration');
+				    this.$inlineExpirationMonthField = this.$additionalFields.find('.'+this._name+'-credit-card-expiration-month');
+				    this.$inlineExpirationYearField = this.$additionalFields.find('.'+this._name+'-credit-card-expiration-year');
+				    this.$expirationMonthField = $('#'+this._defaults.expirationMonthId);
+				    this.$expirationYearField = $('#'+this._defaults.expirationYearId);
 				    this.$cvvField = this.$additionalFields.find('.credit-card-cvv');
-					this.$expirationField.inputmask("99/99", { "oncomplete": function() { self.$cvvField.trigger('focus') }, "placeholder": "", showMaskOnFocus: false });
+
+				    var inputLineHeight = el.outerHeight(),
+				    	$inputList = [el, this.$inlineExpirationMonthField, this.$inlineExpirationYearField, this.$cvvField];
+				    	
+			    	for (var i = 0; i <= $inputList.length; i++) {
+	    		    	$($inputList[i]).css({
+	    			    	'line-height': inputLineHeight+'px',
+	    			    	'height': inputLineHeight+'px'
+	    			    });
+			    	}
+				    
+				    // Hide inline fields
+				    var hiddenCSS = {
+				    	'position': 'fixed',
+				    	'width': '1px',
+				    	'height': '1px',
+				    	'overflow': 'hidden',
+				    	'left': '-9999px'
+				    }
+				    
+				    this.$expirationMonthField.css(hiddenCSS).siblings('label').css(hiddenCSS);
+				    this.$expirationYearField.css(hiddenCSS).siblings('label').css(hiddenCSS);
+
+				    // Sync hidden fields with inline expiration fields
+				    this.$expirationMonthField.on('change', function() {
+				    	self.$inlineExpirationMonthField.val($(this).val())
+				    });
+
+				    this.$expirationYearField.on('change', function() {
+				    	self.$inlineExpirationYearField.val($(this).val());
+				    	self.$cvvField.trigger('focus')
+				    });
+
+					// Automatically focus on next input when complete
+					el.on('keyup', 
+						function() { 
+							if ($(this).val().length == 19) {
+								self.showAdditionalFields(true);
+								self.settings.cardNumberCompleted = true;
+							}
+						}
+					);
+
+					this.$inlineExpirationMonthField.on('keyup', 
+						function() { 
+							self.$expirationMonthField.val($(this).val());
+							if ($(this).val().length == $(this).attr('maxlength')) {
+								self.$inlineExpirationYearField.trigger('focus');
+							}
+						}
+					);
+
+					this.$inlineExpirationYearField.on('keyup', 
+						function() { 
+							self.$expirationYearField.val($(this).val());
+							if ($(this).val().length == $(this).attr('maxlength')) {
+								self.$cvvField.trigger('focus');
+							}
+						}
+					);
 
 				    // Apply a fixed with for the containing div of the additional fields
 				    var totalInputWidth = 0;
@@ -195,10 +277,12 @@
 				 * @param  {boolean} triggerFocus Set to true if next input focus desired
 				 */
 				showAdditionalFields: function(triggerFocus) {
-					this.$element.css('text-indent', - this.settings.letterWidth * 12 + 'px');
+
+					console.log('triggerFocus ' , triggerFocus);
+					this.$element.css('text-indent', - this.settings.letterWidth * 11 + 'px');
 					this.$additionalFields.css('left', this.settings.iconWidth + this.settings.inputPadding * 2 + (this.settings.letterWidth + 1) * 5 + 'px').addClass('visible');
 					if (triggerFocus) {
-						this.$expirationField.trigger('focus');
+						this.$inlineExpirationMonthField.trigger('focus');
 					}
 				},
 
